@@ -20,22 +20,14 @@ Keywords and sponsorship phrase lists are saved locally in the browser and persi
 8. Works Everywhere — Compatible with any job board or careers page (LinkedIn, Indeed, Greenhouse, Lever, Workday, and more)
 
 ## Installation Instructions
-### Normal Use
-1. Clone the repo.
-2. Open Chrome and navigate to `chrome://extensions/`.
-3. Enable "Developer mode" by toggling the switch in the top right.
-4. Click on "Load unpacked" and select the downloaded extension folder.
-5. The extension will be added to your Chrome browser.
 
 ### Development Setup
 1. Clone the repository:  
    `git clone https://github.com/Bikash-Mainali/BM-Job-Search-Extension.git`
-2. Navigate into the project directory:  
-   `cd BM-Job-Search-Extension`
-3. Install any dependencies if applicable (this step depends on the project's requirements).
-4. Open Chrome and go to `chrome://extensions/`.
-5. Enable "Developer mode" and click on "Load unpacked".
-6. Select the project folder to load it as an extension.
+2. Open Chrome and navigate to `chrome://extensions/`.
+3. Enable "Developer mode" by toggling the switch in the top right.
+4. Click on "Load unpacked" and select the downloaded extension folder.
+5. The extension will be added to your Chrome browser.
 
 ## Usage Guide
 1. Click on the extension icon in your Chrome toolbar.
