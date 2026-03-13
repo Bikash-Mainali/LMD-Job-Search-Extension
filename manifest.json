@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Lamidanda — Keyword Highlighter",
+  "name": "LMD-JobSearch",
   "version": "1.0.0",
   "description": "Highlight job-search keywords on any page. Set your skills, find your matches.",
   "permissions": [
