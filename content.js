@@ -9,7 +9,7 @@ const STORAGE_KEY = "sponsorshipKeywords";
   // ── Styles ───────────────────────────────────────────────────────────────
   function injectStyles(theme = 'dark') {
     if (document.getElementById(STYLE_ID)) {
-      document.getElementById(STYLE_ID).remove(); // remove so theme can update
+      document.getElementById(STYLE_ID).remove();
     }
 
     const isDark = theme === 'dark';
@@ -60,8 +60,14 @@ const STORAGE_KEY = "sponsorshipKeywords";
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 13px;
       color: ${vars.bannerColor};
-      overflow: hidden;
+      overflow: visible;
+      opacity: 1;
       animation: jobspot-slide-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    #${BANNER_ID}.jobspot-fade-out {
+      opacity: 0 !important;
+      transition: opacity 0.4s ease !important;
     }
 
     @keyframes jobspot-slide-in {
@@ -136,7 +142,7 @@ const STORAGE_KEY = "sponsorshipKeywords";
 
   function injectStylesWithTheme() {
     chrome.storage.local.get(['theme'], (result) => {
-      injectStyles(result.theme || 'dark'); // result.theme, with 'dark' as fallback
+      injectStyles(result.theme || 'dark');
     });
   }
 
@@ -150,16 +156,29 @@ const STORAGE_KEY = "sponsorshipKeywords";
     });
   }
 
+  // ── Auto-dismiss banner after delay ──────────────────────────────────────
+  function scheduleBannerDismiss(delayMs = 5000) {
+    setTimeout(() => {
+      const b = document.getElementById(BANNER_ID);
+      if (!b) return;
+      b.classList.add('jobspot-fade-out');
+      setTimeout(() => {
+        const b2 = document.getElementById(BANNER_ID);
+        b2.style.transition = 'opacity 0.4s ease';
+        b2.style.opacity = '0';
+        if (b2) b2.remove();
+      }, 450);
+    }, delayMs);
+  }
+
   // ── Inject sponsorship banner onto the page ───────────────────────────────
   function showSponsorshipBanner(sponsorship) {
-    // Remove existing banner
     const existing = document.getElementById(BANNER_ID);
     if (existing) existing.remove();
 
     const positive = sponsorship?.positive || [];
     const negative = sponsorship?.negative || [];
 
-    // Nothing to show
     if (positive.length === 0 && negative.length === 0) return;
 
     const banner = document.createElement('div');
@@ -214,6 +233,7 @@ const STORAGE_KEY = "sponsorshipKeywords";
     }
 
     document.body.appendChild(banner);
+    scheduleBannerDismiss(4000);
   }
 
   // ── Remove banner from page ───────────────────────────────────────────────
@@ -230,14 +250,11 @@ const STORAGE_KEY = "sponsorshipKeywords";
   }
 
   // ── Auto-highlight: reads storage and runs if enabled ─────────────────────
-  // Sponsorship detection ALWAYS runs on every page load — no toggle or
-  // keyword requirement. The auto-highlight toggle only gates keyword highlighting.
   function autoHighlightIfEnabled() {
     chrome.storage.local.get(['jobKeywords', 'autoHighlight'], (result) => {
       const hasKeywords = result.jobKeywords && result.jobKeywords.length > 0;
 
       if (result.autoHighlight && hasKeywords) {
-        // Toggle ON + keywords present: highlight keywords AND detect sponsorship
         injectStylesWithTheme();
         clearHighlights();
         highlightKeywords(result.jobKeywords).then(data => {
@@ -245,7 +262,6 @@ const STORAGE_KEY = "sponsorshipKeywords";
           showSponsorshipBanner(data.sponsorship);
         });
       } else {
-        // No toggle or no keywords — always still scan for sponsorship phrases
         detectSponsorshipOnly().then(sponsorship => {
           const data = { count: 0, sponsorship };
           publishResult(data);
@@ -277,6 +293,10 @@ const STORAGE_KEY = "sponsorshipKeywords";
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
 
+      if ('theme' in changes) {
+        injectStyles(changes.theme.newValue || 'dark');
+      }
+
       if ('jobKeywords' in changes || 'autoHighlight' in changes) {
         chrome.storage.local.get(['jobKeywords', 'autoHighlight'], (result) => {
           if (!result.autoHighlight) {
@@ -297,7 +317,6 @@ const STORAGE_KEY = "sponsorshipKeywords";
               showSponsorshipBanner(data.sponsorship);
             });
           } else {
-            // No keywords — still detect and show sponsorship banner
             detectSponsorshipOnly().then(sponsorship => {
               const data = { count: 0, sponsorship };
               publishResult(data);
