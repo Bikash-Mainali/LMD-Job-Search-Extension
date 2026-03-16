@@ -1,4 +1,4 @@
-# BM Job Search Extension
+# BM-JobLens Extension
 
 ## Description
 BM-JobLens is a Chrome extension for job seekers who are tired of manually scanning through dozens of postings. Define a personal list of keywords — skills, roles, work arrangements, seniority levels — and instantly highlight every match on any job listing page, so the signal jumps out without reading every line.
